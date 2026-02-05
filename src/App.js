@@ -137,7 +137,6 @@ function AccountabilityApp() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 pb-20 relative overflow-hidden">
       <AnimatedBackground />
