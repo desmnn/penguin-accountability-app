@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from './firebase'; 
 import { collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { CheckCircle, Circle, Plus, Trash2, Send, Target, ListTodo, MessageCircle, TrendingUp, LogOut, Trophy, Gift } from 'lucide-react';
+import { Trash2, Send, Target, MessageCircle, TrendingUp, LogOut, Gift } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function AccountabilityApp() {
@@ -12,7 +12,6 @@ function AccountabilityApp() {
   const [goals, setGoals] = useState([]);
   const [messages, setMessages] = useState([]);
   const [rewards, setRewards] = useState([]);
-  const [todos, setTodos] = useState([]); // Keep todos local or add Firebase similarly
 
   const [activeTab, setActiveTab] = useState('goals');
   const [newGoalText, setNewGoalText] = useState('');
@@ -35,19 +34,16 @@ function AccountabilityApp() {
   useEffect(() => {
     if (!currentUser) return;
 
-    // Listen to Goals
     const qGoals = query(collection(db, "goals"), orderBy("createdAt", "desc"));
     const unsubGoals = onSnapshot(qGoals, (snapshot) => {
       setGoals(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
-    // Listen to Messages
     const qMsgs = query(collection(db, "messages"), orderBy("createdAt", "asc"));
     const unsubMsgs = onSnapshot(qMsgs, (snapshot) => {
       setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
-    // Listen to Rewards
     const qRewards = query(collection(db, "rewards"), orderBy("createdAt", "desc"));
     const unsubRewards = onSnapshot(qRewards, (snapshot) => {
       setRewards(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -118,7 +114,7 @@ function AccountabilityApp() {
 
   const AnimatedBackground = () => (
     <div className="fixed inset-0 -z-10 overflow-hidden">
-      <div className="absolute -inset-[40%] bg-gradient-to-tr from-blue-600/20 via-purple-600/10 to-pink-600/20 blur-3xl animate-pulse" />
+      <div className="absolute -inset-[40%] bg-gradient-to-tr from-blue-600/20 via-purple-600/10 to-pink-600/20 blur-3xl" />
     </div>
   );
 
@@ -137,6 +133,7 @@ function AccountabilityApp() {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 pb-20 relative overflow-hidden">
       <AnimatedBackground />
@@ -211,17 +208,17 @@ function AccountabilityApp() {
                   <p className="text-xs font-black text-zinc-500 mb-2 uppercase">Reward {users[otherUser]}</p>
                   <div className="flex gap-2">
                     <input className="flex-1 bg-zinc-800 p-4 rounded-2xl" placeholder="e.g. Dinner on me..." value={rewardText} onChange={e => setRewardText(e.target.value)} />
-                    <button onClick={addReward} className="bg-pink-600 px-6 rounded-2xl"><Plus /></button>
+                    <button onClick={addReward} className="bg-pink-600 px-6 rounded-2xl"><Gift size={20}/></button>
                   </div>
                 </div>
                 {rewards.map(r => (
-                  <div key={r.id} className={`p-6 rounded-3xl border flex items-center justify-between ${r.claimed ? 'opacity-50 bg-black' : 'bg-zinc-900 border-pink-500/30'}`}>
+                  <div key={r.id} className={`p-6 rounded-3xl border flex items-center justify-between ${r.claimed ? 'opacity-50 bg-black border-zinc-800' : 'bg-zinc-900 border-pink-500/30'}`}>
                     <div>
                       <p className="text-xs font-black text-pink-500 uppercase">{users[r.from]} → {users[r.to]}</p>
-                      <p className={`font-bold text-lg ${r.claimed ? 'line-through' : ''}`}>{r.text}</p>
+                      <p className={`font-bold text-lg ${r.claimed ? 'line-through text-zinc-500' : ''}`}>{r.text}</p>
                     </div>
                     <button onClick={() => toggleReward(r.id, r.claimed)} className="p-3 bg-zinc-800 rounded-xl">
-                      {r.claimed ? <CheckCircle className="text-green-500" /> : <Gift />}
+                      <Gift className={r.claimed ? "text-zinc-600" : "text-pink-500"} />
                     </button>
                   </div>
                 ))}
